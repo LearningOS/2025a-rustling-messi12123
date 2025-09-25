@@ -10,8 +10,6 @@
 //
 // Execute `rustlings hint rc1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -60,17 +58,17 @@ fn main() {
     jupiter.details();
 
     // TODO
-    let saturn = Planet::Saturn(Rc::new(Sun {}));
+    let saturn = Planet::Saturn(Rc::clone(&sun)); // 中文注释：对 Arc（Rc）进行引用计数克隆，不复制 Sun
     println!("reference count = {}", Rc::strong_count(&sun)); // 7 references
     saturn.details();
 
     // TODO
-    let uranus = Planet::Uranus(Rc::new(Sun {}));
+    let uranus = Planet::Uranus(Rc::clone(&sun)); // 中文注释：继续克隆 Rc 引用
     println!("reference count = {}", Rc::strong_count(&sun)); // 8 references
     uranus.details();
 
     // TODO
-    let neptune = Planet::Neptune(Rc::new(Sun {}));
+    let neptune = Planet::Neptune(Rc::clone(&sun)); // 中文注释：最后一个行星也共享同一个 Sun
     println!("reference count = {}", Rc::strong_count(&sun)); // 9 references
     neptune.details();
 
@@ -92,12 +90,15 @@ fn main() {
     println!("reference count = {}", Rc::strong_count(&sun)); // 4 references
 
     // TODO
+    drop(earth);
     println!("reference count = {}", Rc::strong_count(&sun)); // 3 references
 
     // TODO
+    drop(venus);
     println!("reference count = {}", Rc::strong_count(&sun)); // 2 references
 
     // TODO
+    drop(mercury);
     println!("reference count = {}", Rc::strong_count(&sun)); // 1 reference
 
     assert_eq!(Rc::strong_count(&sun), 1);

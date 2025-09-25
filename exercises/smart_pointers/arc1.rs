@@ -21,19 +21,17 @@
 //
 // Execute `rustlings hint arc1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 #![forbid(unused_imports)] // Do not change this, (or the next) line.
 use std::sync::Arc;
 use std::thread;
 
 fn main() {
     let numbers: Vec<_> = (0..100u32).collect();
-    let shared_numbers = // TODO
+    let shared_numbers = Arc::new(numbers); //将 Vec 包装进 Arc，实现线程安全共享
     let mut joinhandles = Vec::new();
 
     for offset in 0..8 {
-        let child_numbers = // TODO
+        let child_numbers = Arc::clone(&shared_numbers); //对 Arc 进行引用计数克隆，不复制底层 Vec
         joinhandles.push(thread::spawn(move || {
             let sum: u32 = child_numbers.iter().filter(|&&n| n % 8 == offset).sum();
             println!("Sum of offset {} is {}", offset, sum);

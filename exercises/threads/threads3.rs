@@ -3,8 +3,6 @@
 // Execute `rustlings hint threads3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
@@ -26,26 +24,31 @@ impl Queue {
     }
 }
 
-fn send_tx(q: Queue, tx: mpsc::Sender<u32>) -> () {
+//send_tx 需要返回两个 JoinHandle，供 main 等待
+fn send_tx(q: Queue, tx: mpsc::Sender<u32>) -> (thread::JoinHandle<()>, thread::JoinHandle<()>) {
     let qc = Arc::new(q);
     let qc1 = Arc::clone(&qc);
     let qc2 = Arc::clone(&qc);
+    let tx1 = tx.clone(); //要复制 Sender，否则被 move 掉
+    let tx2 = tx.clone();
 
-    thread::spawn(move || {
+    let handle1 = thread::spawn(move || {
         for val in &qc1.first_half {
             println!("sending {:?}", val);
-            tx.send(*val).unwrap();
+            tx1.send(*val).unwrap();
             thread::sleep(Duration::from_secs(1));
         }
     });
 
-    thread::spawn(move || {
+    let handle2 = thread::spawn(move || {
         for val in &qc2.second_half {
             println!("sending {:?}", val);
-            tx.send(*val).unwrap();
+            tx2.send(*val).unwrap();
             thread::sleep(Duration::from_secs(1));
         }
     });
+
+    (handle1, handle2)
 }
 
 fn main() {
@@ -53,7 +56,10 @@ fn main() {
     let queue = Queue::new();
     let queue_length = queue.length;
 
-    send_tx(queue, tx);
+    let (handle1, handle2) = send_tx(queue, tx);
+    //确保所有子线程都执行完毕后，再进入接收环节
+    handle1.join().unwrap();
+    handle2.join().unwrap();
 
     let mut total_received: u32 = 0;
     for received in rx {
