@@ -6,14 +6,14 @@
 // Execute `rustlings hint generics2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
-struct Wrapper {
-    value: u32,
+//使用泛型 T 替代固定的 u32
+struct Wrapper<T> {
+    value: T,
 }
 
-impl Wrapper {
-    pub fn new(value: u32) -> Self {
+//实现泛型构造器 Wrapper::new
+impl<T> Wrapper<T> {
+    pub fn new(value: T) -> Self {
         Wrapper { value }
     }
 }

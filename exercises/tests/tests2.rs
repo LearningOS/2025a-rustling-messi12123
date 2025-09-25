@@ -6,12 +6,10 @@
 // Execute `rustlings hint tests2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 #[cfg(test)]
 mod tests {
     #[test]
     fn you_can_assert_eq() {
-        assert_eq!();
+        assert_eq!(2 + 2, 4); //补充合法表达式，测试通过
     }
 }

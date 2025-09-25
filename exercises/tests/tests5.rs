@@ -15,14 +15,12 @@
 // the comment on the code block.
 //
 // NOTE: All the comments are for the readability and the maintainability of
-// your code, while the Rust compiler hands its trust of soundness of your
-// code to yourself! If you cannot prove the memory safety and soundness of
+// your code, while the Rust compiler hands its trust of soundness of
+// your code to yourself! If you cannot prove the memory safety and soundness of
 // your own code, take a step back and use safe code instead!
 //
 // Execute `rustlings hint tests5` or use the `hint` watch subcommand for a
 // hint.
-
-// I AM NOT DONE
 
 /// # Safety
 ///
@@ -32,7 +30,9 @@ unsafe fn modify_by_address(address: usize) {
     // code's behavior and the contract of this function. You may use the
     // comment of the test below as your format reference.
     unsafe {
-        todo!("Your code goes here")
+        //传入的address是有效的 u32 可变引用地址
+        let ptr = address as *mut u32;
+        *ptr = 0xAABBCCDD;
     }
 }
 

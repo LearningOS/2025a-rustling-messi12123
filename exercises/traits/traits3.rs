@@ -8,10 +8,11 @@
 // Execute `rustlings hint traits3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 pub trait Licensed {
-    fn licensing_info(&self) -> String;
+    //提供默认实现，避免重复写函数体
+    fn licensing_info(&self) -> String {
+        String::from("Some information")
+    }
 }
 
 struct SomeSoftware {

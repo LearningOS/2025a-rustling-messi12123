@@ -27,17 +27,23 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
-
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
 mod Foo {
-    // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    //该函数需要导出符号名以供外部调用
+    #[no_mangle]
+    pub extern "Rust" fn my_demo_function(a: u32) -> u32 {
         a
+    }
+
+    //为原函数创建一个别名 my_demo_function_alias
+    #[no_mangle]
+    #[export_name = "my_demo_function_alias"]
+    pub extern "Rust" fn my_demo_function_alias(a: u32) -> u32 {
+        my_demo_function(a)
     }
 }
 
