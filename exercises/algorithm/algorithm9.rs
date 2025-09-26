@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -23,7 +22,7 @@ where
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
-            items: vec![T::default()],
+            items: vec![T::default()], // 下标0 作为哨兵，真正元素从 1开始
             comparator,
         }
     }
@@ -37,7 +36,20 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        // 将元素放到数组末尾，然后上浮到合适位置（heapify-up）
+        self.items.push(value);
+        self.count += 1;
+        let mut idx = self.count;
+        while idx > 1 {
+            let parent = self.parent_idx(idx);
+            // 若当前节点比父节点优先（由comparator定义），则交换
+            if (self.comparator)(&self.items[idx], &self.items[parent]) {
+                self.items.swap(idx, parent);
+                idx = parent;
+            } else {
+                break;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +69,20 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        //返回按 comparator选择的更优子结点索引,若只有左子结点则返回左
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        if right > self.count {
+            //没有右孩子，返回左孩子
+            left
+        } else {
+            //比较左右孩子，按comparator选更优者
+            if (self.comparator)(&self.items[left], &self.items[right]) {
+                left
+            } else {
+                right
+            }
+        }
     }
 }
 
@@ -84,8 +108,37 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        // 取出堆顶并做下沉（heapify-down）
+        if self.count == 0 {
+            return None;
+        }
+
+        // 当只有一个元素时，直接 pop 返回
+        if self.count == 1 {
+            self.count = 0;
+            return self.items.pop();
+        }
+
+        // 将末尾元素移动到root，并弹出末尾位置,同时拿到原root
+        let last = self.items.pop().unwrap(); // 末尾元素
+        self.count -= 1;
+        // 用last 替换 root，取出原 root 为返回值
+        let root = std::mem::replace(&mut self.items[1], last);
+
+        // 下沉从索引1 开始
+        let mut idx = 1;
+        while self.children_present(idx) {
+            let child = self.smallest_child_idx(idx);
+            // 如果child比当前节点更优（按comparator），交换并继续
+            if (self.comparator)(&self.items[child], &self.items[idx]) {
+                self.items.swap(child, idx);
+                idx = child;
+            } else {
+                break;
+            }
+        }
+
+        Some(root)
     }
 }
 

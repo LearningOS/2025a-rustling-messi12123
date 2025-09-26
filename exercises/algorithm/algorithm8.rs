@@ -2,7 +2,6 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -54,28 +53,47 @@ impl<T> Default for Queue<T> {
 
 pub struct myStack<T>
 {
-	//TODO
+	//使用两个队列实现栈
 	q1:Queue<T>,
 	q2:Queue<T>
 }
 impl<T> myStack<T> {
     pub fn new() -> Self {
         Self {
-			//TODO
+			//初始化两个空队列
 			q1:Queue::<T>::new(),
 			q2:Queue::<T>::new()
         }
     }
     pub fn push(&mut self, elem: T) {
-        //TODO
+        // 入栈：将元素放入主队列 q1
+        self.q1.enqueue(elem);
     }
     pub fn pop(&mut self) -> Result<T, &str> {
-        //TODO
-		Err("Stack is empty")
+        // 出栈：将q1 中除了最后一个元素外的所有元素依次移动到 q2，
+        // 然后交换 q1和q2，再从q2（原q1）取出最后一个元素。
+        if self.q1.is_empty() {
+            return Err("Stack is empty");
+        }
+
+        while self.q1.size() > 1 {
+            // 这里unwrap 是安全的：size()>1时dequeue 必然成功
+            let v = self.q1.dequeue().unwrap();
+            self.q2.enqueue(v);
+        }
+
+        // 先交换队列使q2 成为含最后一个元素的队列（原q1）
+        std::mem::swap(&mut self.q1, &mut self.q2);
+
+        // 现在q2（原q1）包含仅剩的最后一个元素，直接dequeue即为栈顶
+        let res = self.q2.dequeue();
+
+        // 注意 此时q1已经是主队列（含剩余元素），q2已为空或已被消费
+        res
     }
     pub fn is_empty(&self) -> bool {
-		//TODO
-        true
+		// 栈为空当且仅当主队列q1 为空
+        self.q1.is_empty()
     }
 }
 
