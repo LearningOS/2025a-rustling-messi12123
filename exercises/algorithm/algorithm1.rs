@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,14 +68,45 @@ impl<T> LinkedList<T> {
             },
         }
     }
+	//要求T: PartialOrd + Copy，为能按值比较并复制节点值
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	where
+		T: PartialOrd + Copy,
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
+		let mut res = Self::new();
+		// 使用两个指针遍历原链表
+		let mut pa = list_a.start;
+		let mut pb = list_b.start;
+
+		unsafe {
+			while pa.is_some() && pb.is_some() {
+				let a_ptr = pa.unwrap();
+				let b_ptr = pb.unwrap();
+				let a_val = (*a_ptr.as_ptr()).val;
+				let b_val = (*b_ptr.as_ptr()).val;
+				if a_val <= b_val {
+					res.add(a_val);
+					pa = (*a_ptr.as_ptr()).next;
+				} else {
+					res.add(b_val);
+					pb = (*b_ptr.as_ptr()).next;
+				}
+			}
+
+			//接上剩余部分
+			while let Some(p) = pa {
+				let v = (*p.as_ptr()).val;
+				res.add(v);
+				pa = (*p.as_ptr()).next;
+			}
+			while let Some(p) = pb {
+				let v = (*p.as_ptr()).val;
+				res.add(v);
+				pb = (*p.as_ptr()).next;
+			}
+		}
+
+		res
 	}
 }
 
